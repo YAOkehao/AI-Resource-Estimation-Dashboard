@@ -50,7 +50,7 @@ def get_session():
 
 # Initialized Data
 def init_data(session):
-    with open('data.csv') as f:
+    with open('db/data.csv') as f:
         next(f)
         for line in f.readlines():
             line = line.strip().split(',')
