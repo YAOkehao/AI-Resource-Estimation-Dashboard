@@ -1,4 +1,3 @@
-import csv
 from sqlalchemy import create_engine, Column, Integer, VARCHAR, TEXT
 from sqlalchemy.orm import declarative_base, Session
 
