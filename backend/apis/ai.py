@@ -43,7 +43,51 @@ class Login(Resource):
         def normalize(value, min_value, max_value):
             return (value - min_value) / (max_value - min_value) if max_value != min_value else 1
         
-        
+                # Filter models that do not support the requested functionalities
+        filtered_models = []
+        for model in allList:
+            # Check if each model supports all the requested services
+            supported = True
+            for service in Service:
+                # If the service is not supported, exclude the model
+                if getattr(model, service) == 0:
+                    supported = False
+                    break
+            if supported:
+                filtered_models.append(model)
+        # If no models match the user's requirements, return empty list
+        if not filtered_models:
+            return {
+                'result': []
+            }
+        # Calculate the total score for each model
+        scored_models = []
+        for model in filtered_models:
+            # Get the minimum and maximum values for each parameter in the filtered models, for normalization
+            min_max_values = {
+                'Price': (min([m.Price for m in filtered_models]), max([m.Price for m in filtered_models])),
+                'Response_Speed': (min([m.Response_Speed for m in filtered_models]), max([m.Response_Speed for m in filtered_models])),
+                'Accuracy': (min([m.Accuracy for m in filtered_models]), max([m.Accuracy for m in filtered_models])),
+                'Ethical_Training': (min([m.Ethical_Training for m in filtered_models]), max([m.Ethical_Training for m in filtered_models])),
+                'Green_Computing_Resources': (min([m.Green_Computing_Resources for m in filtered_models]), max([m.Green_Computing_Resources for m in filtered_models])),
+                'Local_Deployment_Capability': (min([m.Local_Deployment_Capability for m in filtered_models]), max([m.Local_Deployment_Capability for m in filtered_models])),
+                'Training_Resource_Requirements': (min([m.Training_Resource_Requirements for m in filtered_models]), max([m.Training_Resource_Requirements for m in filtered_models])),
+                'Fine_Tuning_Difficulty': (min([m.Fine_Tuning_Difficulty for m in filtered_models]), max([m.Fine_Tuning_Difficulty for m in filtered_models])),
+                'Multilingual_Support_Capability': (min([m.Multilingual_Support_Capability for m in filtered_models]), max([m.Multilingual_Support_Capability for m in filtered_models])),
+                'Model_Scalability': (min([m.Model_Scalability for m in filtered_models]), max([m.Model_Scalability for m in filtered_models]))
+            }
+            # Perform weighted calculation for each parameter
+            total_score = 0
+            for param, weight in weights.items():
+                normalized_score = normalize(getattr(model, param), *min_max_values[param])
+                total_score += normalized_score * weight
+            scored_models.append((model, total_score))
+        # Sort models by total score in descending order
+        scored_models.sort(key=lambda x: x[1], reverse=True)
+        # Get the top recommended models (top 3)
+        top_models = scored_models[:3]
+        # Return the recommendation results
+        recommendations = [{"Name": model.Name, "Score": score} for model, score in top_models]
         
         return {
             'result': recommendations
