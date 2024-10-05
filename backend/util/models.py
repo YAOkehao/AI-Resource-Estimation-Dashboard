@@ -23,3 +23,8 @@ def llm_request_details(api):
         'Multilingual_Support_Capability': fields.Integer(required=True, example='2'),
         'Model_Scalability': fields.Integer(required=True, example='2')
     })
+    
+def llm_compare_details(api):
+    return api.model('llm_compare_details', {
+        'name': fields.List(fields.String, required=True, example=['GPT-4', 'Claude 2', 'T5'])
+    })
