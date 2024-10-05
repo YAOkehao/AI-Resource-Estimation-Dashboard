@@ -19,8 +19,6 @@ class Login(Resource):
     def post(self):
         if not request.json:
             abort(400, 'Malformed Request')
-        #if (request.args.get('property_id', None) is None):
-        #    abort(400, "You must provide the property_id you want to update")
         
         (Service, Price, Response_Speed, Accuracy, Ethical_Training, Green_Computing_Resources, Local_Deployment_Capability, Training_Resource_Requirements, Fine_Tuning_Difficulty, Multilingual_Support_Capability, Model_Scalability) = unpack(request.json, 'Service', 'Price', 'Response_Speed', 'Accuracy', 'Ethical_Training', 'Green_Computing_Resources', 'Local_Deployment_Capability', 'Training_Resource_Requirements', 'Fine_Tuning_Difficulty', 'Multilingual_Support_Capability', 'Model_Scalability')
         session = db.get_session()
