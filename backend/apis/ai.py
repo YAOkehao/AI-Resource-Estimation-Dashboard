@@ -90,3 +90,28 @@ class Login(Resource):
         return {
             'result': recommendations
         }
+        
+@api.route('/compareLLM')
+class Login(Resource):
+    @api.response(200, 'Success')
+    @api.response(400, 'Missing Arguments')
+    @api.response(403, 'Invalid Token')
+    @api.expect(llm_compare_details(api))
+    @api.doc(description='''
+        This is used to compare the LLM.
+    ''')
+    def post(self):
+        if not request.json:
+            abort(400, 'Malformed Request')
+        
+        (names) = unpack(request.json, 'names')
+        session = db.get_session()
+        allList = session.query(db.LLM).filter(db.LLM.Name.in_(tuple(names))).all()
+        session.close()
+        
+        
+        
+        return {
+            'result': allList
+        }       
+        

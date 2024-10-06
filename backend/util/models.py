@@ -26,5 +26,5 @@ def llm_request_details(api):
     
 def llm_compare_details(api):
     return api.model('llm_compare_details', {
-        'name': fields.List(fields.String, required=True, example=['GPT-4', 'Claude 2', 'T5'])
+        'names': fields.List(fields.String, required=True, example=['GPT-4', 'Claude 2', 'T5'])
     })
