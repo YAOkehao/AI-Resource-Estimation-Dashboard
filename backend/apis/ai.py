@@ -82,8 +82,8 @@ class RecommendLLM(Resource):
             scored_models.append((model, total_score))
         # Sort models by total score in descending order
         scored_models.sort(key=lambda x: x[1], reverse=True)
-        # Get the top recommended models (top 3)
-        top_models = scored_models[:3]
+        # Get the top recommended models (top 10)
+        top_models = scored_models[:10]
         # Return the recommendation results
         recommendations = [{"Name": model.Name, "Score": score} for model, score in top_models]
         
