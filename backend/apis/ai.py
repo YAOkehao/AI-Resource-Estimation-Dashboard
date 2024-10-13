@@ -131,16 +131,42 @@ class CompareLLM(Resource):
                     "Table_Processing": raw.Table_Processing,
                     "Summarization": raw.Summarization,
                     "Logical_Reasoning": raw.Logical_Reasoning,
-                    "Mathematical_Problem_Solving": raw.Mathematical_Problem_Solving
+                    "Mathematical_Problem_Solving": raw.Mathematical_Problem_Solving,
+                    "Description": raw.Description
                 }
 
         returnList = []
         for model in allList:
             if model.Name in names[0]:
                 returnList.append(getModelInfo(model))
-   
-   
+        return {
+            'result': returnList
+        }
+    
+@api.route('/getAllInfo')
+class GetAllInfo(Resource):
+    @api.response(200, 'Success')
+    @api.response(400, 'Missing Arguments')
+    @api.response(403, 'Invalid Token')
+    @api.doc(description='''
+        This is used to get the LLM info.
+    ''')
+    def get(self):
+        session = db.get_session()
+        allList = session.query(db.LLM).all()
+        session.close()
         
+        def getModelInfo(raw):
+            return {
+                "id": raw.id,
+                "Name": raw.Name,
+                "Description": raw.Description
+            }
+        
+        returnList = []
+        for model in allList:
+            returnList.append(getModelInfo(model))
+                
         return {
             'result': returnList
         }       
