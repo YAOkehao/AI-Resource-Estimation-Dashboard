@@ -7,7 +7,7 @@ import db.init_db as db
 api = Namespace('ai', description='ai Services')
 
 @api.route('/recommendLLM')
-class Login(Resource):
+class RecommendLLM(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Missing Arguments')
     @api.response(403, 'Invalid Token')
@@ -92,7 +92,7 @@ class Login(Resource):
         }
         
 @api.route('/compareLLM')
-class Login(Resource):
+class CompareLLM(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Missing Arguments')
     @api.response(403, 'Invalid Token')
