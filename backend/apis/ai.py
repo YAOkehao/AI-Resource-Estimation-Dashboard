@@ -106,12 +106,42 @@ class CompareLLM(Resource):
         
         (names) = unpack(request.json, 'names')
         session = db.get_session()
-        allList = session.query(db.LLM).filter(db.LLM.Name.in_(tuple(names))).all()
+        allList = session.query(db.LLM).all()
         session.close()
         
-        
+        def getModelInfo(raw):
+                return {
+                    "id": raw.id,
+                    "Name": raw.Name,
+                    "Development_Company": raw.Development_Company,
+                    "Price": raw.Price,
+                    "Response_Speed": raw.Response_Speed,
+                    "Accuracy": raw.Accuracy,
+                    "Ethical_Training": raw.Ethical_Training,
+                    "Green_Computing_Resources": raw.Green_Computing_Resources,
+                    "Local_Deployment_Capability": raw.Local_Deployment_Capability,
+                    "Training_Resource_Requirements": raw.Training_Resource_Requirements,
+                    "Fine_Tuning_Difficulty": raw.Fine_Tuning_Difficulty,
+                    "Multilingual_Support_Capability": raw.Multilingual_Support_Capability,
+                    "Model_Scalability": raw.Model_Scalability,
+                    "Text_Generation": raw.Text_Generation,
+                    "Image_Generation": raw.Image_Generation,
+                    "Song_Generation": raw.Song_Generation,
+                    "Code_Generation": raw.Code_Generation,
+                    "Table_Processing": raw.Table_Processing,
+                    "Summarization": raw.Summarization,
+                    "Logical_Reasoning": raw.Logical_Reasoning,
+                    "Mathematical_Problem_Solving": raw.Mathematical_Problem_Solving
+                }
+
+        returnList = []
+        for model in allList:
+            if model.Name in names[0]:
+                returnList.append(getModelInfo(model))
+   
+   
         
         return {
-            'result': allList
+            'result': returnList
         }       
         
