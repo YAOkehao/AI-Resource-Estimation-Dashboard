@@ -33,6 +33,13 @@ const CompareLLM = () => {
   return (
     <div className="p-4 bg-gray-100 min-h-screen">
     <div className="max-w-4xl mx-auto">
+        {/* Hint for model selection */}
+        {selectedModels.length < 2 && (
+        <div className="bg-gray-50 p-6 rounded-lg text-center mb-6 text-gray-500 border border-gray-300">
+           Start by selecting two or more models to compare.
+        </div>
+      )}
+      
       {/* LLM Model Selection */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {llmModels.map((model) => (
