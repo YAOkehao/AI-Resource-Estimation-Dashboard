@@ -28,9 +28,9 @@ const CompareLLM = () => {
   }, []);
 
   // Handle model selection, toggling selected models
-  const handleModelSelection = (model: string) => {
-    setSelectedModels(prev =>
-      prev.includes(model) ? prev.filter(item => item !== model) : [...prev, model]
+  const handleModelSelection = (modelName: string) => {
+    setSelectedModels((prev) =>
+      prev.includes(modelName) ? prev.filter((item) => item !== modelName) : [...prev, modelName]
     );
   };
 
@@ -53,18 +53,18 @@ const CompareLLM = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {llmModels.map((model) => (
           <div
-            key={model.name}
-            onClick={() => handleModelSelection(model.name)}
+            key={model.id}
+            onClick={() => handleModelSelection(model.Name)}
             className={`relative bg-white shadow-md rounded-lg p-6 transition-all transform cursor-pointer ${
-              selectedModels.includes(model.name) ? 'border-4 border-blue-500' : ''
+              selectedModels.includes(model.Name) ? 'border-4 border-blue-500' : ''
             } hover:shadow-lg`}
           >
             {/* Model Info */}
-            <h3 className="text-xl font-semibold mb-2">{model.name}</h3>
-            <p className="text-gray-600 mb-4">{model.description}</p>
+            <h3 className="text-xl font-semibold mb-2">{model.Name}</h3>
+            <p className="text-gray-600 mb-4">{model.Description}</p>
             {/* Selection Indicator */}
             <div className="flex items-center justify-between">
-              {selectedModels.includes(model.name) ? (
+            {selectedModels.includes(model.Name) ? (
                 <FaCheckCircle className="text-blue-500 w-6 h-6" />
               ) : (
                 <span className="text-gray-500">Select</span>
@@ -75,18 +75,18 @@ const CompareLLM = () => {
                   <div className="relative">
                     <input
                       type="checkbox"
-                      checked={selectedModels.includes(model.name)}
-                      onChange={() => handleModelSelection(model.name)}
+                      checked={selectedModels.includes(model.Name)}
+                      onChange={() => handleModelSelection(model.Name)}
                       className="sr-only"
                     />
                     <div
                       className={`block w-10 h-6 rounded-full transition-colors ${
-                        selectedModels.includes(model.name) ? 'bg-blue-500' : 'bg-gray-400'
+                        selectedModels.includes(model.Name) ? 'bg-blue-500' : 'bg-gray-400'
                       }`}
                     ></div>
                     <div
                       className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform transform ${
-                        selectedModels.includes(model.name) ? 'translate-x-4' : ''
+                        selectedModels.includes(model.Name) ? 'translate-x-4' : ''
                       }`}
                     ></div>
                   </div>
@@ -101,9 +101,9 @@ const CompareLLM = () => {
             <div className="flex justify-between items-center max-w-4xl mx-auto">
               {/* Selected Models Overview */}
               <div className="flex space-x-4">
-                {selectedModels.map((model) => (
-                  <div key={model} className="bg-gray-100 p-2 rounded-lg">
-                    {model}
+              {selectedModels.map((modelName) => (
+                  <div key={modelName} className="bg-gray-100 p-2 rounded-lg">
+                    {modelName}
                   </div>
                 ))}
               </div>
