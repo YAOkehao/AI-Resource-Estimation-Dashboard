@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { FaCheckCircle } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+import { fetchAllModelInfo } from './api';
 
 // data for test...
 const llmModels = [
@@ -17,6 +17,15 @@ const llmModels = [
 
 const CompareLLM = () => {
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
+  
+  const [llmModels, setLlmModels] = useState<any[]>([]);
+  useEffect(() => {
+    const fetchModels = async () => {
+      const data = await fetchAllModelInfo();
+      setLlmModels(data);
+    };
+    fetchModels();
+  }, []);
 
   // Handle model selection, toggling selected models
   const handleModelSelection = (model: string) => {
