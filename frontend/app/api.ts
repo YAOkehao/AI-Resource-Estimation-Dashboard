@@ -20,4 +20,15 @@ export const fetchAllModelInfo = async () => {
     console.error('Error fetching model information:', error);
     throw error; // Propagate the error
   }
+
 };
+// Function to compare selected LLMs
+export const compareLLM = async (names: string[]) => {
+    try {
+      const response = await apiClient.post('/ai/compareLLM', { names });
+      return response.data; // Return the comparison result
+    } catch (error) {
+      console.error('Error comparing LLMs:', error);
+      throw error; // Propagate the error
+    }
+  };

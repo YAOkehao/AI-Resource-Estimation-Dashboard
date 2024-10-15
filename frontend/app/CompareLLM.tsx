@@ -1,24 +1,11 @@
 import { useEffect, useState } from 'react';
-import { fetchAllModelInfo } from './api';
-
-// data for test...
-const llmModels = [
-    { name: 'LLM1',  description: 'This is some description for this AI models...' },
-    { name: 'LLM2',  description: 'This is some description for this AI models...' },
-    { name: 'LLM3',  description: 'This is some description for this AI models...' },
-    { name: 'LLM4',  description: 'This is some description for this AI models...' },
-    { name: 'LLM5',  description: 'This is some description for this AI models...' },
-    { name: 'LLM6',  description: 'This is some description for this AI models...' },
-    { name: 'LLM7',  description: 'This is some description for this AI models...' },
-    { name: 'LLM8',  description: 'This is some description for this AI models...' },
-    { name: 'LLM9',  description: 'This is some description for this AI models...' },
-    { name: 'LLM10', description: 'This is some description for this AI models...' },
-  ];
+import { FaCheckCircle } from 'react-icons/fa';
+import { compareLLM, fetchAllModelInfo } from './api';
 
 const CompareLLM = () => {
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
-  
   const [llmModels, setLlmModels] = useState<any[]>([]);
+  
   useEffect(() => {
     const fetchModels = async () => {
       const data = await fetchAllModelInfo();
@@ -33,10 +20,13 @@ const CompareLLM = () => {
       prev.includes(modelName) ? prev.filter((item) => item !== modelName) : [...prev, modelName]
     );
   };
-
-  const handleCompareSubmit = () => {
-
-    console.log('Selected Models for Comparison:', selectedModels);
+  const handleCompareSubmit = async () => {
+    try {
+      const result = await compareLLM(selectedModels);
+      console.log('Comparison Result:', result);
+    } catch (error) {
+      console.error('Failed to compare models:', error);
+    }
   };
 
   return (
