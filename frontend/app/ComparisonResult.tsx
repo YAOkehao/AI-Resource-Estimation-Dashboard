@@ -1,4 +1,17 @@
 import React from 'react';
+
+import { Radar } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip,
+  Legend
+} from 'chart.js';
+ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
+
 interface ModelComparisonProps {
   comparisonResult: any[]; // The array of models from the API response
 }
@@ -24,10 +37,54 @@ const ComparisonResult: React.FC<ModelComparisonProps> = ({ comparisonResult }) 
     { label: 'Logical Reasoning', key: 'Logical_Reasoning', type: 'binary' },
     { label: 'Mathematical Problem Solving', key: 'Mathematical_Problem_Solving', type: 'binary' },
   ];
+
+
+  // Filter non-binary parameters for the radar chart
+  const radarParams = parameters.filter(param => !param.type);
+  // Prepare the data for the radar chart
+  const radarData = {
+    labels: radarParams.map((param) => param.label),
+    datasets: comparisonResult.map((model, index) => {
+      const colors = [
+        'rgba(255, 99, 132, 0.2)', // Red
+        'rgba(54, 162, 235, 0.2)', // Blue
+        'rgba(75, 192, 192, 0.2)', // Green
+        'rgba(255, 206, 86, 0.2)', // Yellow
+        'rgba(153, 102, 255, 0.2)', // Purple
+        'rgba(255, 159, 64, 0.2)',  // Orange
+        'rgba(100, 255, 218, 0.2)', // Cyan
+        'rgba(255, 140, 0, 0.2)',   // Dark Orange
+        'rgba(255, 20, 147, 0.2)',  // Deep Pink
+        'rgba(139, 69, 19, 0.2)'    // Brown
+      ];
+  
+      return {
+        label: model.Name,
+        data: radarParams.map((param) => model[param.key]),
+        fill: true,
+        backgroundColor: colors[index % colors.length], // Ensure color cycling if more than 10 models
+        borderColor: colors[index % colors.length].replace('0.2', '1'),
+        borderWidth: 2,
+      };
+    }),
+  };
+  const radarOptions = {
+    scales: {
+      r: {
+        beginAtZero: true,
+        max: 5, // Assuming all data points are in the range 0-5
+      },
+    },
+  };
   return (
     <div className="p-4 bg-gray-100 min-h-screen">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-3xl font-bold mb-6 text-center">Model Comparison</h2>
+
+        {/* Radar Chart for non-binary parameters */}
+        <div className="mb-6">
+          <Radar data={radarData} options={radarOptions} />
+        </div>
         {/* Comparison Table */}
         <table className="min-w-full table-auto border-collapse bg-white shadow-lg rounded-lg">
           <thead>
@@ -63,6 +120,7 @@ const ComparisonResult: React.FC<ModelComparisonProps> = ({ comparisonResult }) 
                 ))}
               </tr>
             ))}
+
             {/* Description row */}
             <tr>
               <td className="border px-4 py-2">Description</td>
@@ -78,4 +136,5 @@ const ComparisonResult: React.FC<ModelComparisonProps> = ({ comparisonResult }) 
     </div>
   );
 };
+
 export default ComparisonResult;
