@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { recommendLLM } from './api';
+import RecommendResult from './RecommendResult';
 
 const options = [
   'Text Generation', 'Image Generation', 'Song Generation', 'Code Generation', 
@@ -16,6 +17,7 @@ const RecommendLLM = () => {
   // State to store selected options and priorities
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [priorities, setPriorities] = useState<{ [key: string]: string }>({});
+  const [recommendationResult, setRecommendationResult] = useState(null);
 
    // Initialize default priorities for all parameters
    useEffect(() => {
@@ -25,8 +27,7 @@ const RecommendLLM = () => {
     }, {} as { [key: string]: string });
     setPriorities(defaultPriorities);
   }, []); // Empty dependency array to ensure this runs once on component mount
-
-
+  
   // Function to handle option selection for LLM features
   const handleOptionChange = (option: string) => {
     setSelectedOptions(prev =>
@@ -65,6 +66,7 @@ const RecommendLLM = () => {
       // Call the recommendLLM API function with the prepared data
       const response = await recommendLLM(requestData);
       console.log('API Response:', response); // Handle the API response
+      setRecommendationResult(response.result);
     } catch (error) {
       console.error('Error recommending LLM:', error); // Handle any errors
     }
@@ -73,53 +75,73 @@ const RecommendLLM = () => {
   return (
     <div className="p-4 bg-gray-100 min-h-screen">
       <div className="max-w-4xl mx-auto">
-
-        {/* Feature selection section */}
-        <h2 className="text-3xl font-bold text-center mb-6">LLM Feature Selection</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6 mb-6">
-          {options.map(option => (
-            <div
-              key={option}
-              onClick={() => handleOptionChange(option)}
-              className={`relative bg-white shadow-md rounded-lg p-4 transition-all transform cursor-pointer hover:shadow-lg ${
-                selectedOptions.includes(option) ? 'border-4 border-blue-500' : ''
-              }`}
-            >
-              <h3 className="text-lg font-semibold mb-2">{option}</h3>
-              <p className="text-gray-500">{`Click to ${selectedOptions.includes(option) ? 'deselect' : 'select'}`}</p>
+        {/* show result */}
+        {recommendationResult ? (
+          <div>
+            <h2 className="text-3xl font-bold text-center mb-6">Recommended LLM Models</h2>
+            <RecommendResult results={recommendationResult} />
+            {/* Return button to go back and try again */}
+            <div className="text-center mt-8">
+              <button
+                onClick={() => setRecommendationResult(null)} // Reset result to return to selection
+                className="bg-blue-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-blue-700 transition"
+              >
+                Return to Feature Selection
+              </button>
             </div>
-          ))}
-        </div>
-
-        {/* Parameter selection section */}
-        <h2 className="text-3xl font-bold text-center mb-6">Decision Parameters</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {parameters.map(param => (
-            <div key={param} className="bg-white shadow-md rounded-lg p-4">
-              <label className="block text-lg font-semibold mb-2">{param}</label>
-              <select
-                onChange={(e) => handlePriorityChange(param, e.target.value)}
-                className="border border-gray-300 rounded-lg p-2 w-full"
-           >
-                <option value="2">Normal</option>
-                <option value="3">High Priority</option>
-                <option value="1">Low Priority</option>
-              </select>
+          </div>
+        ) : (
+          <>
+            {/* Feature selection section */}
+            <h2 className="text-3xl font-bold text-center mb-6">LLM Feature Selection</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6 mb-6">
+              {options.map((option) => (
+                <div
+                  key={option}
+                  onClick={() => handleOptionChange(option)}
+                  className={`relative bg-white shadow-md rounded-lg p-4 transition-all transform cursor-pointer hover:shadow-lg ${
+                    selectedOptions.includes(option) ? 'border-4 border-blue-500' : ''
+                  }`}
+                >
+                  <h3 className="text-lg font-semibold mb-2">{option}</h3>
+                  <p className="text-gray-500">{`Click to ${selectedOptions.includes(option) ? 'deselect' : 'select'}`}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        {/* Submit button */}
-        <div className="text-center mt-8">
-          <button
-            onClick={handleSubmit}
-            className="bg-blue-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-blue-700 transition"
-          >
-            Submit
-            </button>
-        </div>
-        </div>
+  
+            {/* Parameter selection section */}
+            <h2 className="text-3xl font-bold text-center mb-6">Decision Parameters</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {parameters.map((param) => (
+                <div key={param} className="bg-white shadow-md rounded-lg p-4">
+                  <label className="block text-lg font-semibold mb-2">{param}</label>
+                  <select
+                    onChange={(e) => handlePriorityChange(param, e.target.value)}
+                    className="border border-gray-300 rounded-lg p-2 w-full"
+                  >
+                    <option value="2">Normal</option>
+                    <option value="3">High Priority</option>
+                    <option value="1">Low Priority</option>
+                  </select>
+                </div>
+              ))}
+            </div>
+  
+            {/* Submit button */}
+            <div className="text-center mt-8">
+              <button
+                onClick={handleSubmit}
+                className="bg-blue-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-blue-700 transition"
+              >
+                Submit
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
+  
 };
 
 export default RecommendLLM;
