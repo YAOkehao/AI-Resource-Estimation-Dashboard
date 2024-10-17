@@ -32,3 +32,25 @@ export const compareLLM = async (names: string[]) => {
       throw error; // Propagate the error
     }
   };
+  // Function to recommend LLMs based on user preferences
+  export const recommendLLM = async (data: {
+    Service: string[],
+    Price: number,
+    Response_Speed: number,
+    Accuracy: number,
+    Ethical_Training: number,
+    Green_Computing_Resources: number,
+    Local_Deployment_Capability: number,
+    Training_Resource_Requirements: number,
+    Fine_Tuning_Difficulty: number,
+    Multilingual_Support_Capability: number,
+    Model_Scalability: number
+  }) => {
+    try {
+      const response = await apiClient.post('/ai/recommendLLM', data);
+      return response.data; // Return the recommendation result
+    } catch (error) {
+      console.error('Error recommending LLMs:', error);
+      throw error; // Propagate the error
+    }
+  };

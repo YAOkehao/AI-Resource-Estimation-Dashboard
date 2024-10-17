@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { recommendLLM } from './api';
 
 const options = [
   'Text Generation', 'Image Generation', 'Song Generation', 'Code Generation', 
@@ -16,6 +17,16 @@ const RecommendLLM = () => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [priorities, setPriorities] = useState<{ [key: string]: string }>({});
 
+   // Initialize default priorities for all parameters
+   useEffect(() => {
+    const defaultPriorities = parameters.reduce((acc, param) => {
+      acc[param] = "2"; // Set 'Normal' as the default priority (value "2")
+      return acc;
+    }, {} as { [key: string]: string });
+    setPriorities(defaultPriorities);
+  }, []); // Empty dependency array to ensure this runs once on component mount
+
+
   // Function to handle option selection for LLM features
   const handleOptionChange = (option: string) => {
     setSelectedOptions(prev =>
@@ -29,9 +40,34 @@ const RecommendLLM = () => {
   };
 
   // Function to submit the selected options and priorities
-  const handleSubmit = () => {
-    console.log('Selected Options:', selectedOptions);
-    console.log('Priorities:', priorities);
+  const handleSubmit = async () => {
+    if (selectedOptions.length === 0) {
+      alert('Please select at least one LLM feature.');
+      return; // Stop the submission
+    }
+  
+    // Prepare the data to match the API request format
+    const requestData = {
+      Service: selectedOptions.map(option => option.replace(/\s/g, '_')), // Replace spaces with underscores for the API keys
+      Price: parseInt(priorities['Price']),
+      Response_Speed: parseInt(priorities['Response Speed']),
+      Accuracy: parseInt(priorities['Accuracy']),
+      Ethical_Training: parseInt(priorities['Ethical Training']),
+      Green_Computing_Resources: parseInt(priorities['Green Computing Resources']),
+      Local_Deployment_Capability: parseInt(priorities['Local Deployment Capability']),
+      Training_Resource_Requirements: parseInt(priorities['Training Resource Requirements']),
+      Fine_Tuning_Difficulty: parseInt(priorities['Fine-Tuning Difficulty']),
+      Multilingual_Support_Capability: parseInt(priorities['Multilingual Support Capability']),
+      Model_Scalability: parseInt(priorities['Model Scalability']),
+    };
+  
+    try {
+      // Call the recommendLLM API function with the prepared data
+      const response = await recommendLLM(requestData);
+      console.log('API Response:', response); // Handle the API response
+    } catch (error) {
+      console.error('Error recommending LLM:', error); // Handle any errors
+    }
   };
 
   return (
@@ -64,10 +100,10 @@ const RecommendLLM = () => {
               <select
                 onChange={(e) => handlePriorityChange(param, e.target.value)}
                 className="border border-gray-300 rounded-lg p-2 w-full"
-              >
-                <option value="High Priority">High Priority</option>
-                <option value="Normal">Normal</option>
-                <option value="Low Priority">Low Priority</option>
+           >
+                <option value="2">Normal</option>
+                <option value="3">High Priority</option>
+                <option value="1">Low Priority</option>
               </select>
             </div>
           ))}
