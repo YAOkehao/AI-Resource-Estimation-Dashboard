@@ -8,10 +8,13 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
 interface RecommendResultProps {
   results: { Name: string; Score: number }[];
 }
+
 const RecommendResult: React.FC<RecommendResultProps> = ({ results }) => {
   // Prepare data for the chart
   const data = {
@@ -26,6 +29,7 @@ const RecommendResult: React.FC<RecommendResultProps> = ({ results }) => {
       },
     ],
   };
+
   const options = {
     responsive: true,
     plugins: {
@@ -43,10 +47,12 @@ const RecommendResult: React.FC<RecommendResultProps> = ({ results }) => {
       },
     },
   };
+
   return (
     <div className="max-w-4xl mx-auto">
       <Bar data={data} options={options} />
     </div>
   );
 };
+
 export default RecommendResult;

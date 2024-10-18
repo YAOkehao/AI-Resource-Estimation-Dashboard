@@ -1,13 +1,17 @@
 "use client"
+
 import { useState } from 'react';
 import RecommendLLM from './RecommendLLM';
 import CompareLLM from './CompareLLM';
+
 const MainPage = () => {
   const [activeTab, setActiveTab] = useState('recommend'); // Set the initial state to the recommended page
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-center mb-8">AI Dashboard</h1>
+
         {/* Tab Switch Button */}
         <div className="flex justify-center space-x-4 mb-8">
           <button
@@ -31,6 +35,7 @@ const MainPage = () => {
             Comparing AI models
           </button>
         </div>
+
         {/* Tab Content */}
         {activeTab === 'recommend' && <RecommendLLM />}
         {activeTab === 'compare' && <CompareLLM />}
@@ -38,4 +43,5 @@ const MainPage = () => {
     </div>
   );
 };
+
 export default MainPage;
