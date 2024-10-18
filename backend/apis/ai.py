@@ -11,7 +11,6 @@ class RecommendLLM(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Missing Arguments')
     @api.response(403, 'Invalid Token')
-
     @api.expect(llm_request_details(api))
     @api.doc(description='''
         This is used to recommend users the LLM that best suits their needs.
@@ -21,6 +20,7 @@ class RecommendLLM(Resource):
             abort(400, 'Malformed Request')
         
         (Service, Price, Response_Speed, Accuracy, Ethical_Training, Green_Computing_Resources, Local_Deployment_Capability, Training_Resource_Requirements, Fine_Tuning_Difficulty, Multilingual_Support_Capability, Model_Scalability) = unpack(request.json, 'Service', 'Price', 'Response_Speed', 'Accuracy', 'Ethical_Training', 'Green_Computing_Resources', 'Local_Deployment_Capability', 'Training_Resource_Requirements', 'Fine_Tuning_Difficulty', 'Multilingual_Support_Capability', 'Model_Scalability')
+
         session = db.get_session()
         allList = session.query(db.LLM).all()
         session.close()
@@ -37,11 +37,12 @@ class RecommendLLM(Resource):
             'Multilingual_Support_Capability': Multilingual_Support_Capability,
             'Model_Scalability': Model_Scalability
         }
+
         # Normalize each model's parameter to the range [0, 1]
         def normalize(value, min_value, max_value):
             return (value - min_value) / (max_value - min_value) if max_value != min_value else 1
-        
-                # Filter models that do not support the requested functionalities
+
+        # Filter models that do not support the requested functionalities
         filtered_models = []
         for model in allList:
             # Check if each model supports all the requested services
@@ -53,11 +54,13 @@ class RecommendLLM(Resource):
                     break
             if supported:
                 filtered_models.append(model)
+
         # If no models match the user's requirements, return empty list
         if not filtered_models:
             return {
                 'result': []
             }
+
         # Calculate the total score for each model
         scored_models = []
         for model in filtered_models:
@@ -74,23 +77,29 @@ class RecommendLLM(Resource):
                 'Multilingual_Support_Capability': (min([m.Multilingual_Support_Capability for m in filtered_models]), max([m.Multilingual_Support_Capability for m in filtered_models])),
                 'Model_Scalability': (min([m.Model_Scalability for m in filtered_models]), max([m.Model_Scalability for m in filtered_models]))
             }
+
             # Perform weighted calculation for each parameter
             total_score = 0
             for param, weight in weights.items():
                 normalized_score = normalize(getattr(model, param), *min_max_values[param])
                 total_score += normalized_score * weight
+
             scored_models.append((model, total_score))
+
         # Sort models by total score in descending order
         scored_models.sort(key=lambda x: x[1], reverse=True)
+
         # Get the top recommended models (top 10)
         top_models = scored_models[:10]
+
         # Return the recommendation results
         recommendations = [{"Name": model.Name, "Score": score} for model, score in top_models]
         
         return {
             'result': recommendations
         }
-        
+    
+
 @api.route('/compareLLM')
 class CompareLLM(Resource):
     @api.response(200, 'Success')
@@ -105,40 +114,42 @@ class CompareLLM(Resource):
             abort(400, 'Malformed Request')
         
         (names) = unpack(request.json, 'names')
+
         session = db.get_session()
         allList = session.query(db.LLM).all()
         session.close()
         
         def getModelInfo(raw):
-                return {
-                    "id": raw.id,
-                    "Name": raw.Name,
-                    "Development_Company": raw.Development_Company,
-                    "Price": raw.Price,
-                    "Response_Speed": raw.Response_Speed,
-                    "Accuracy": raw.Accuracy,
-                    "Ethical_Training": raw.Ethical_Training,
-                    "Green_Computing_Resources": raw.Green_Computing_Resources,
-                    "Local_Deployment_Capability": raw.Local_Deployment_Capability,
-                    "Training_Resource_Requirements": raw.Training_Resource_Requirements,
-                    "Fine_Tuning_Difficulty": raw.Fine_Tuning_Difficulty,
-                    "Multilingual_Support_Capability": raw.Multilingual_Support_Capability,
-                    "Model_Scalability": raw.Model_Scalability,
-                    "Text_Generation": raw.Text_Generation,
-                    "Image_Generation": raw.Image_Generation,
-                    "Song_Generation": raw.Song_Generation,
-                    "Code_Generation": raw.Code_Generation,
-                    "Table_Processing": raw.Table_Processing,
-                    "Summarization": raw.Summarization,
-                    "Logical_Reasoning": raw.Logical_Reasoning,
-                    "Mathematical_Problem_Solving": raw.Mathematical_Problem_Solving,
-                    "Description": raw.Description
-                }
-
+            return {
+                "id": raw.id,
+                "Name": raw.Name,
+                "Development_Company": raw.Development_Company,
+                "Price": raw.Price,
+                "Response_Speed": raw.Response_Speed,
+                "Accuracy": raw.Accuracy,
+                "Ethical_Training": raw.Ethical_Training,
+                "Green_Computing_Resources": raw.Green_Computing_Resources,
+                "Local_Deployment_Capability": raw.Local_Deployment_Capability,
+                "Training_Resource_Requirements": raw.Training_Resource_Requirements,
+                "Fine_Tuning_Difficulty": raw.Fine_Tuning_Difficulty,
+                "Multilingual_Support_Capability": raw.Multilingual_Support_Capability,
+                "Model_Scalability": raw.Model_Scalability,
+                "Text_Generation": raw.Text_Generation,
+                "Image_Generation": raw.Image_Generation,
+                "Song_Generation": raw.Song_Generation,
+                "Code_Generation": raw.Code_Generation,
+                "Table_Processing": raw.Table_Processing,
+                "Summarization": raw.Summarization,
+                "Logical_Reasoning": raw.Logical_Reasoning,
+                "Mathematical_Problem_Solving": raw.Mathematical_Problem_Solving,
+                "Description": raw.Description
+            }
+        
         returnList = []
         for model in allList:
             if model.Name in names[0]:
                 returnList.append(getModelInfo(model))
+        
         return {
             'result': returnList
         }
@@ -166,8 +177,8 @@ class GetAllInfo(Resource):
         returnList = []
         for model in allList:
             returnList.append(getModelInfo(model))
-                
+        
         return {
             'result': returnList
-        }       
+        }    
         

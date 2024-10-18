@@ -2,13 +2,13 @@ import csv
 from sqlalchemy import create_engine, Column, Integer, VARCHAR, TEXT
 from sqlalchemy.orm import declarative_base, Session
 
-#Create engine
+# 创建引擎
 engine = create_engine('sqlite:///db/dataBase.db?check_same_thread=False', echo=True)
 
-#Declare base class
+# 声明基类
 Base = declarative_base()
 
-#ORM model class
+# ORM 模型类
 class LLM(Base):
     __tablename__ = 'LLM'
     id = Column(Integer, primary_key=True)
@@ -37,20 +37,20 @@ class LLM(Base):
     def __repr__(self):
         return f'LLM:\nid: {self.id}\n'
 
-#Initialize database
+# 初始化数据库
 def init_db():
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 
-    #Create a session and use the context manager
+    # 创建 Session 并使用上下文管理器
     with Session(engine) as session:
         init_data(session)
 
-#Get session
+# 获取 session
 def get_session():
     return Session(engine)
 
-#Initialize data
+# 初始化数据
 def init_data(session):
     with open('db/data.csv', newline='', encoding='utf-8') as f:
         reader = csv.reader(f)
